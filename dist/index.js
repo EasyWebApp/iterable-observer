@@ -10,7 +10,7 @@ import EventStream from './EventStream';
  *
  * @return {EventSource}
  */
-export default function (URL, method, data, type) {
+export default function request(URL, method, data, type) {
 
     return new EventStream((next, done, fail) => {
 

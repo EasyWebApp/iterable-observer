@@ -1,0 +1,21 @@
+{
+  "coverage": "57.14%",
+  "expectCount": 7,
+  "actualCount": 4,
+  "files": {
+    "source/EventStream.js": {
+      "expectCount": 6,
+      "actualCount": 3,
+      "undocumentLines": [
+        1,
+        30,
+        55
+      ]
+    },
+    "source/index.js": {
+      "expectCount": 1,
+      "actualCount": 1,
+      "undocumentLines": []
+    }
+  }
+}

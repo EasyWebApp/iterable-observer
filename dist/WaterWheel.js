@@ -333,8 +333,27 @@ var _module_ = {
             Object.defineProperty(exports, "__esModule", {
                 value: true
             });
+            exports.default = request;
 
-            exports.default = function (URL, method, data, type) {
+            var _EventStream = require('./EventStream');
+
+            var _EventStream2 = _interopRequireDefault(_EventStream);
+
+            function _interopRequireDefault(obj) {
+                return obj && obj.__esModule ? obj : { default: obj };
+            }
+
+            /**
+             * HTTP request
+             *
+             * @param {string|URL} URL
+             * @param {string}     [method='GET']
+             * @param {?*}         data           - Data to send
+             * @param {string}     [type='text']  - [Response type](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/responseType)
+             *
+             * @return {EventSource}
+             */
+            function request(URL, method, data, type) {
 
                 return new _EventStream2.default(function (next, done, fail) {
 
@@ -361,14 +380,6 @@ var _module_ = {
 
                     XHR.send(data);
                 });
-            };
-
-            var _EventStream = require('./EventStream');
-
-            var _EventStream2 = _interopRequireDefault(_EventStream);
-
-            function _interopRequireDefault(obj) {
-                return obj && obj.__esModule ? obj : { default: obj };
             }
         }
     }

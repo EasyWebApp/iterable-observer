@@ -12,7 +12,7 @@
   ],
   "author": "shiy2008@gmail.com",
   "license": "LGPL-3.0",
-  "homepage": "https://github.com/EasyWebApp/WaterWheel#readme",
+  "homepage": "https://easywebapp.github.io/WaterWheel/",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/EasyWebApp/WaterWheel.git"
@@ -23,8 +23,10 @@
   "main": "source/index.js",
   "browser": "dist/WaterWheel.js",
   "scripts": {
-    "build": "babel source/ -d dist/  &&  amd-bundle dist/index dist/WaterWheel",
-    "start": "web-server -o test/",
+    "bundle": "babel source/ -d dist/  &&  amd-bundle dist/index dist/WaterWheel",
+    "build": "npm run bundle  &&  esdoc  &&  git add .",
+    "start": "web-server docs/ -o",
+    "preview": "web-server -o test/",
     "check": "cross-env NODE_ENV=test  mocha",
     "test": "npm run check -- --exit",
     "debug": "npm run check -- --inspect-brk"
@@ -40,6 +42,10 @@
     "babel-preset-env": "^1.7.0",
     "babel-register": "^6.26.0",
     "cross-env": "^5.2.0",
+    "esdoc": "^1.1.0",
+    "esdoc-ecmascript-proposal-plugin": "^1.0.0",
+    "esdoc-external-webapi-plugin": "^1.0.0",
+    "esdoc-standard-plugin": "^1.0.0",
     "koapache": "^1.0.2",
     "mocha": "^5.2.0",
     "should": "^13.2.3",
@@ -53,10 +59,10 @@
     "env": {
       "test": {
         "presets": [
-            "env"
+          "env"
         ],
         "plugins": [
-            "transform-async-generator-functions"
+          "transform-async-generator-functions"
         ]
       }
     }

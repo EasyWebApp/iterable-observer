@@ -69,6 +69,9 @@ describe('Event stream',  () => {
         ()  =>  throwError(new EventStream(() => {  throw error;  }))
     );
 
+    /**
+     * @test {EventStream#\[Symbol\.asyncIterator\]}
+     */
     it(
         'should throw the error on `fail( error )` called',
         ()  =>  throwError(new EventStream((next, done, fail) => {
