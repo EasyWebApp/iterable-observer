@@ -1,4 +1,4 @@
-import Observable from './Observable';
+import EventStream from './EventStream';
 
 /**
  * HTTP request
@@ -8,11 +8,11 @@ import Observable from './Observable';
  * @param {?*}         data           - Data to send
  * @param {string}     [type='text']  - [Response type](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/responseType)
  *
- * @return {Observable}
+ * @return {EventSource}
  */
 export default function (URL, method, data, type) {
 
-    return new Observable((next, done) => {
+    return new EventStream((next, done, fail) => {
 
         const XHR = new XMLHttpRequest();
 
@@ -22,6 +22,8 @@ export default function (URL, method, data, type) {
         });
 
         XHR.onload = () => done(XHR.response);
+
+        XHR.onerror = event => fail(event.error || event.detail);
 
         XHR.open(method || 'GET', URL);
 

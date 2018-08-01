@@ -64,7 +64,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var _module_ = {
-    './Observable': {
+    './EventStream': {
         base: '.',
         dependency: [],
         factory: function factory(require, exports, module) {
@@ -128,78 +128,126 @@ var _module_ = {
                     } };
             }();
 
-            var _queue_ = new WeakMap();
+            var _private_ = new WeakMap();
 
-            var Observable = function () {
+            /**
+             * A simplified implement of `Observable()`
+             *
+             * @see https://tc39.github.io/proposal-observable/
+             */
+
+            var EventStream = function () {
                 /**
-                 * @param {EmitterWrapper} emitter
+                 * @param {EmitterWrapper} listener
                  */
-                function Observable(emitter) {
-                    var _this2 = this;
+                function EventStream(listener) {
+                    _classCallCheck(this, EventStream);
 
-                    _classCallCheck(this, Observable);
+                    var that = {};
 
-                    var queue = [];
+                    _private_.set(this, that);
 
-                    _queue_.set(this, queue);
+                    that.boot = that.done = false;
 
-                    var next;
+                    that.listener = listener;
 
-                    var wait = function wait() {
-                        return queue.push(new Promise(function (resolve) {
-                            return next = resolve;
-                        }));
+                    that.canceller = that.resolve = that.reject = null;
+
+                    that.next = function (value) {
+                        return that.resolve(value);
                     };
 
-                    wait();
-
-                    this.done = false;
-
-                    emitter(function (value) {
-                        return next(value), wait();
-                    }, function (value) {
-                        return next(value), _this2.done = true;
-                    });
+                    that.fail = function (error) {
+                        return that.reject(error), that.done = true;
+                    };
                 }
 
-                _createClass(Observable, [{
+                _createClass(EventStream, [{
+                    key: 'listen',
+                    value: function listen() {
+                        var _this2 = this;
+
+                        var that = _private_.get(this);
+
+                        if (that.boot) return;
+
+                        try {
+                            that.canceller = that.listener.call(null, that.next, function () {
+                                var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(value) {
+                                    return regeneratorRuntime.wrap(function _callee$(_context) {
+                                        while (1) {
+                                            switch (_context.prev = _context.next) {
+                                                case 0:
+
+                                                    that.next(value), that.done = true;
+
+                                                    _context.next = 3;
+                                                    return Promise.resolve();
+
+                                                case 3:
+
+                                                    try {
+                                                        that.canceller.call(null);
+                                                    } catch (error) {
+                                                        that.fail(error);
+                                                    }
+
+                                                case 4:
+                                                case 'end':
+                                                    return _context.stop();
+                                            }
+                                        }
+                                    }, _callee, _this2);
+                                }));
+
+                                return function (_x) {
+                                    return _ref.apply(this, arguments);
+                                };
+                            }(), that.fail);
+                        } catch (error) {
+                            that.fail(error);
+                        }
+
+                        that.boot = true;
+                    }
+                }, {
                     key: Symbol.asyncIterator,
                     value: function value() {
                         var _this = this;
 
-                        return _asyncGenerator.wrap( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-                            var queue, i;
-                            return regeneratorRuntime.wrap(function _callee$(_context) {
+                        return _asyncGenerator.wrap( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
+                            var that;
+                            return regeneratorRuntime.wrap(function _callee2$(_context2) {
                                 while (1) {
-                                    switch (_context.prev = _context.next) {
+                                    switch (_context2.prev = _context2.next) {
                                         case 0:
-                                            queue = _queue_.get(_this);
-                                            i = 0;
+                                            that = _private_.get(_this);
 
-                                        case 2:
-                                            if (_this.done) {
-                                                _context.next = 10;
+                                        case 1:
+                                            if (that.done) {
+                                                _context2.next = 8;
                                                 break;
                                             }
 
-                                            _context.next = 5;
-                                            return _asyncGenerator.await(queue[i]);
+                                            _context2.next = 4;
+                                            return _asyncGenerator.await(new Promise(function (resolve, reject) {
+                                                return that.resolve = resolve, that.reject = reject, _this.listen();
+                                            }));
 
-                                        case 5:
-                                            _context.next = 7;
-                                            return _context.sent;
+                                        case 4:
+                                            _context2.next = 6;
+                                            return _context2.sent;
 
-                                        case 7:
-                                            i++;
-                                            _context.next = 2;
+                                        case 6:
+                                            _context2.next = 1;
                                             break;
 
-                                        case 10:
+                                        case 8:
                                         case 'end':
-                                            return _context.stop();
+                                            return _context2.stop();
                                     }
                                 }
-                            }, _callee, this);
+                            }, _callee2, this);
                         }))();
                     }
 
@@ -210,69 +258,72 @@ var _module_ = {
                 }, {
                     key: 'toPromise',
                     value: function () {
-                        var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
+                        var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3() {
                             var iterator, value, result;
-                            return regeneratorRuntime.wrap(function _callee2$(_context2) {
+                            return regeneratorRuntime.wrap(function _callee3$(_context3) {
                                 while (1) {
-                                    switch (_context2.prev = _context2.next) {
+                                    switch (_context3.prev = _context3.next) {
                                         case 0:
                                             iterator = this[Symbol.asyncIterator]();
 
                                         case 1:
                                             if (!true) {
-                                                _context2.next = 10;
+                                                _context3.next = 10;
                                                 break;
                                             }
 
-                                            _context2.next = 4;
+                                            _context3.next = 4;
                                             return iterator.next();
 
                                         case 4:
-                                            result = _context2.sent;
+                                            result = _context3.sent;
 
                                             if (!result.done) {
-                                                _context2.next = 7;
+                                                _context3.next = 7;
                                                 break;
                                             }
 
-                                            return _context2.abrupt('break', 10);
+                                            return _context3.abrupt('break', 10);
 
                                         case 7:
 
                                             value = result.value;
-                                            _context2.next = 1;
+                                            _context3.next = 1;
                                             break;
 
                                         case 10:
-                                            return _context2.abrupt('return', value);
+                                            return _context3.abrupt('return', value);
 
                                         case 11:
                                         case 'end':
-                                            return _context2.stop();
+                                            return _context3.stop();
                                     }
                                 }
-                            }, _callee2, this);
+                            }, _callee3, this);
                         }));
 
                         function toPromise() {
-                            return _ref.apply(this, arguments);
+                            return _ref2.apply(this, arguments);
                         }
 
                         return toPromise;
                     }()
                 }]);
 
-                return Observable;
+                return EventStream;
             }();
 
-            exports.default = Observable; /**
-                                           * Wrapper of Event emitter
-                                           *
-                                           * @typedef {function} EmitterWrapper
-                                           *
-                                           * @param {function} next
-                                           * @param {function} done
-                                           */
+            exports.default = EventStream; /**
+                                            * Wrapper of Event emitter
+                                            *
+                                            * @typedef {function} EmitterWrapper
+                                            *
+                                            * @param {function(value: *): void}     next
+                                            * @param {function(value: *): void}     done
+                                            * @param {function(error: Error): void} fail
+                                            *
+                                            * @return {Function} Remove Event listeners from the emitter
+                                            */
         }
     },
     './index': {
@@ -285,7 +336,7 @@ var _module_ = {
 
             exports.default = function (URL, method, data, type) {
 
-                return new _Observable2.default(function (next, done) {
+                return new _EventStream2.default(function (next, done, fail) {
 
                     var XHR = new XMLHttpRequest();
 
@@ -300,6 +351,10 @@ var _module_ = {
                         return done(XHR.response);
                     };
 
+                    XHR.onerror = function (event) {
+                        return fail(event.error || event.detail);
+                    };
+
                     XHR.open(method || 'GET', URL);
 
                     XHR.responseType = type || 'text';
@@ -308,9 +363,9 @@ var _module_ = {
                 });
             };
 
-            var _Observable = require('./Observable');
+            var _EventStream = require('./EventStream');
 
-            var _Observable2 = _interopRequireDefault(_Observable);
+            var _EventStream2 = _interopRequireDefault(_EventStream);
 
             function _interopRequireDefault(obj) {
                 return obj && obj.__esModule ? obj : { default: obj };
