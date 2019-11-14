@@ -1,70 +1,48 @@
 {
-  "name": "waterwheel",
-  "version": "0.2.0",
-  "description": "Modern HTTP client based on AsyncGenerator function in ES 9",
-  "keywords": [
-    "HTTP",
-    "client",
-    "async",
-    "generator",
-    "function",
-    "iterator"
-  ],
-  "author": "shiy2008@gmail.com",
-  "license": "LGPL-3.0",
-  "homepage": "https://easywebapp.github.io/WaterWheel/",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/EasyWebApp/WaterWheel.git"
-  },
-  "bugs": {
-    "url": "https://github.com/EasyWebApp/WaterWheel/issues"
-  },
-  "main": "source/index.js",
-  "browser": "dist/WaterWheel.js",
-  "scripts": {
-    "bundle": "babel source/ -d dist/  &&  amd-bundle dist/index dist/WaterWheel",
-    "build": "npm run bundle  &&  esdoc  &&  git add .",
-    "start": "web-server docs/ -o",
-    "preview": "web-server -o test/",
-    "check": "cross-env NODE_ENV=test  mocha",
-    "test": "npm run check -- --exit",
-    "debug": "npm run check -- --inspect-brk"
-  },
-  "dependencies": {
-    "babel-polyfill": "^6.26.0",
-    "babel-runtime": "^6.26.0"
-  },
-  "devDependencies": {
-    "amd-bundle": "^1.3.2",
-    "babel-cli": "^6.26.0",
-    "babel-plugin-transform-async-generator-functions": "^6.24.1",
-    "babel-preset-env": "^1.7.0",
-    "babel-register": "^6.26.0",
-    "cross-env": "^5.2.0",
-    "esdoc": "^1.1.0",
-    "esdoc-ecmascript-proposal-plugin": "^1.0.0",
-    "esdoc-external-webapi-plugin": "^1.0.0",
-    "esdoc-standard-plugin": "^1.0.0",
-    "koapache": "^1.0.2",
-    "mocha": "^5.2.0",
-    "should": "^13.2.3",
-    "should-sinon": "0.0.6",
-    "sinon": "^6.1.4"
-  },
-  "babel": {
-    "plugins": [
-      "transform-async-generator-functions"
+    "name": "WaterWheel",
+    "version": "1.0.0-alpha.0",
+    "license": "LGPL-3.0",
+    "author": "shiy2008@gmail.com",
+    "description": "Observable Proposal implement based on Async Generator (ES 2018) & TypeScript",
+    "keywords": [
+        "observer",
+        "observable",
+        "proposal",
+        "typescript",
+        "async",
+        "generator",
+        "iterator"
     ],
-    "env": {
-      "test": {
-        "presets": [
-          "env"
-        ],
-        "plugins": [
-          "transform-async-generator-functions"
+    "homepage": "https://web-cell.dev/WaterWheel/",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/EasyWebApp/WaterWheel.git"
+    },
+    "bugs": {
+        "url": "https://github.com/EasyWebApp/WaterWheel/issues"
+    },
+    "main": "dist/index.js",
+    "devDependencies": {
+        "husky": "^3.0.9",
+        "lint-staged": "^9.4.3",
+        "prettier": "^1.19.1"
+    },
+    "prettier": {
+        "singleQuote": true,
+        "tabWidth": 4
+    },
+    "lint-staged": {
+        "*.{md,json,ts}": [
+            "prettier --write",
+            "git add"
         ]
-      }
+    },
+    "scripts": {
+        "test": "lint-staged"
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "npm test"
+        }
     }
-  }
 }
