@@ -1,6 +1,6 @@
 export interface Defer<T = any> {
     promise: Promise<T>;
-    resolve: (data: any) => void;
+    resolve: (data: T) => void;
     reject: (error: Error | string) => void;
 }
 

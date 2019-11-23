@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "module": "umd",
+        "module": "es6",
         "moduleResolution": "node",
         "esModuleInterop": true,
         "target": "es5",
