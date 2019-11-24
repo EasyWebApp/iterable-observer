@@ -6,13 +6,40 @@ export interface Observer<T = any> {
     complete(): void;
 }
 
+export interface Subscription {
+    unsubscribe(): void;
+    readonly closed: boolean;
+}
+
+export interface Subscribable<T = any> {
+    [Symbol.observable](): Subscribable<T>;
+    subscribe(
+        onNext: Observer<T>['next'],
+        onError?: Observer<T>['error'],
+        onComplete?: Observer<T>['complete']
+    ): Subscription;
+}
+
 export type SubscriberFunction = (observer: Observer) => (() => void) | void;
 
-export class Observable<T = any> {
+export type EventHandler = (data: any) => void;
+
+export interface EventTrigger {
+    addEventListener?(name: string, handler: EventHandler): void;
+    removeEventListener?(name: string, handler: EventHandler): void;
+    on?(name: string, handler: EventHandler): this;
+    off?(name: string, handler: EventHandler): this;
+}
+
+export class Observable<T = any> implements Subscribable {
     private subscriber: SubscriberFunction;
 
     constructor(subscriber: SubscriberFunction) {
         this.subscriber = subscriber;
+    }
+
+    [Symbol.observable]() {
+        return this;
     }
 
     async *[Symbol.asyncIterator]() {
@@ -58,6 +85,18 @@ export class Observable<T = any> {
         });
     }
 
+    async toPromise() {
+        const stack = [];
+
+        for await (const item of this) {
+            stack.push(item);
+
+            if (stack.length > 2) stack.shift();
+        }
+
+        return stack[0];
+    }
+
     subscribe(
         onNext: Observer<T>['next'],
         onError?: Observer<T>['error'],
@@ -87,10 +126,30 @@ export class Observable<T = any> {
         };
     }
 
-    static from<T = any>(observable: Observable<T>) {
+    static from<T = any>(observable: Subscribable<T>) {
         return new this<T>(
             ({ next, error, complete }) =>
                 observable.subscribe(next, error, complete).unsubscribe
         );
+    }
+
+    static fromEvent<T = any>(target: EventTrigger, name: string) {
+        return new this<T>(({ next, error }) => {
+            if (typeof target.on === 'function')
+                target.on(name, next).on('error', error);
+            else {
+                target.addEventListener(name, next);
+                target.addEventListener('error', error);
+            }
+
+            return () => {
+                if (typeof target.off === 'function')
+                    target.off(name, next).off('error', error);
+                else {
+                    target.removeEventListener(name, next);
+                    target.removeEventListener('error', error);
+                }
+            };
+        });
     }
 }

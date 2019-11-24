@@ -1,4 +1,5 @@
 import { Observable, Observer } from '../source';
+import { EventEmitter } from 'events';
 
 function createExample() {
     var timer: any,
@@ -59,6 +60,12 @@ describe('Observable', () => {
             expect(list).toEqual(expect.arrayContaining([1, 2, 3]));
         });
 
+        it('should convert to a Promise', () => {
+            const observable = Observable.of<number>(1, 2, 3);
+
+            expect(observable.toPromise()).resolves.toBe(3);
+        });
+
         it('should invoke handlers after subscribing', async () => {
             const { subscriber, cleaner } = createExample();
 
@@ -89,6 +96,31 @@ describe('Observable', () => {
             for await (const item of observable) list.push(item);
 
             expect(list).toEqual(expect.arrayContaining([1, 2, 3, 4, 5]));
+        });
+    });
+
+    describe('3th Party Platform interfaces', () => {
+        it('should listen Event Emitters', async () => {
+            const target = new EventEmitter();
+            var count = 0;
+
+            const observable = Observable.fromEvent(target, 'test'),
+                list = [];
+
+            const timer = setInterval(() => {
+                if (++count < 4) target.emit('test', count);
+                else {
+                    clearInterval(timer);
+                    target.emit('error', 'example');
+                }
+            }, 0);
+
+            try {
+                for await (const item of observable) list.push(item);
+            } catch (error) {
+                expect(list).toEqual(expect.arrayContaining([1, 2, 3]));
+                expect(error).toBe('example');
+            }
         });
     });
 });
