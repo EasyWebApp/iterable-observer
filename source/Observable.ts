@@ -1,4 +1,6 @@
-import { Defer, makeDefer } from './utility';
+import { Defer, makeDefer, EventTrigger } from './utility';
+
+Symbol.observable = Symbol('observable');
 
 export interface Observer<T = any> {
     next(value: T): void;
@@ -20,21 +22,14 @@ export interface Subscribable<T = any> {
     ): Subscription;
 }
 
-export type SubscriberFunction = (observer: Observer) => (() => void) | void;
-
-export type EventHandler = (data: any) => void;
-
-export interface EventTrigger {
-    addEventListener?(name: string, handler: EventHandler): void;
-    removeEventListener?(name: string, handler: EventHandler): void;
-    on?(name: string, handler: EventHandler): this;
-    off?(name: string, handler: EventHandler): this;
-}
+export type SubscriberFunction<T = any> = (
+    observer: Observer<T>
+) => (() => void) | void;
 
 export class Observable<T = any> implements Subscribable {
-    private subscriber: SubscriberFunction;
+    private subscriber: SubscriberFunction<T>;
 
-    constructor(subscriber: SubscriberFunction) {
+    constructor(subscriber: SubscriberFunction<T>) {
         this.subscriber = subscriber;
     }
 
@@ -74,7 +69,7 @@ export class Observable<T = any> implements Subscribable {
             yield queue[0].promise;
 
             queue.shift();
-        } while (queue[0] || !done);
+        } while (queue[0]);
     }
 
     static of<T = any>(...items: T[]) {

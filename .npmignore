@@ -1,5 +1,5 @@
 .editorconfig
 test/
-.rts2_cache_*/
+.cache/
 docs/
 .travis.yml

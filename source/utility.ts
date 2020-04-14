@@ -13,3 +13,12 @@ export function makeDefer<T>(): Defer<T> {
 
     return { resolve, reject, promise };
 }
+
+export type EventHandler = (data: any) => void;
+
+export interface EventTrigger {
+    addEventListener?(name: string, handler: EventHandler): void;
+    removeEventListener?(name: string, handler: EventHandler): void;
+    on?(name: string, handler: EventHandler): this;
+    off?(name: string, handler: EventHandler): this;
+}

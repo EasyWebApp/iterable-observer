@@ -1,4 +1,4 @@
-import { Observable, Observer } from '../source';
+import { Observable, Observer, createQueue } from '../source';
 import { EventEmitter } from 'events';
 
 function createExample() {
@@ -121,6 +121,33 @@ describe('Observable', () => {
                 expect(list).toEqual(expect.arrayContaining([1, 2, 3]));
                 expect(error).toBe('example');
             }
+        });
+    });
+
+    describe('Async Queue', () => {
+        it('should process Data serially', async () => {
+            const { process, destroy, observable } = createQueue(),
+                list = [];
+            var count = 0;
+
+            setTimeout(function tick() {
+                process(count++).then(number => list.push(number));
+
+                if (count < 5) setTimeout(tick, 0);
+                else destroy();
+            }, 0);
+
+            for await (const item of observable)
+                if (item) {
+                    let {
+                        defer: { resolve },
+                        data
+                    } = item;
+
+                    resolve(++data);
+                }
+
+            expect(list).toEqual(expect.arrayContaining([1, 2, 3, 4, 5]));
         });
     });
 });

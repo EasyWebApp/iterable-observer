@@ -51,6 +51,29 @@ reader.readAsBlob(file);
 })();
 ```
 
+### Concurrent Task to Serial Queue
+
+```javascript
+import { createQueue } from 'iterable-observer';
+import Koa from 'koa';
+import BodyParser from 'koa-bodyparser';
+
+const { process, observable } = createQueue(),
+    app = new Koa();
+
+(async () => {
+    for await (const {
+        defer: { resolve },
+        data
+    } of observable)
+        resolve(JSON.stringify(data));
+})();
+
+app.use(BodyParser)
+    .use(async context => (context.body = await process(context.request.body)))
+    .listen(80);
+```
+
 [1]: https://github.com/tc39/proposal-observable
 [2]: https://tc39.es/ecma262/#sec-asyncgeneratorfunction-objects
 [3]: https://www.typescriptlang.org/
