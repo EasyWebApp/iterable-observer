@@ -1,4 +1,5 @@
 .editorconfig
+.vscode/
 test/
 .cache/
 docs/

@@ -1,3 +1,0 @@
-interface SymbolConstructor {
-    observable: symbol;
-}

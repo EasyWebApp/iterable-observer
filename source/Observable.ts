@@ -1,6 +1,12 @@
 import { Defer, makeDefer, EventTrigger } from './utility';
 
-Symbol.observable = Symbol('observable');
+declare global {
+    interface SymbolConstructor {
+        observable: symbol;
+    }
+}
+
+if (!Symbol.observable) Symbol.observable = Symbol('observable');
 
 export interface Observer<T = any> {
     next(value: T): void;
