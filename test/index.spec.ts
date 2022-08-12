@@ -19,7 +19,7 @@ function createExample() {
 describe('Observable', () => {
     describe('Single', () => {
         const { subscriber, cleaner } = createExample();
-        var observable: Observable;
+        var observable: Observable<number>;
 
         it('should not call Subscriber Function while constructing', () => {
             observable = new Observable<number>(subscriber);
@@ -28,7 +28,7 @@ describe('Observable', () => {
         });
 
         it('should iterate Limited items asynchronously', async () => {
-            const list = [];
+            const list: number[] = [];
 
             for await (const item of observable) list.push(item);
 
@@ -53,7 +53,7 @@ describe('Observable', () => {
     describe('Pipe', () => {
         it('should construct an Observable from Static data', async () => {
             const observable = Observable.of<number>(1, 2, 3),
-                list = [];
+                list: number[] = [];
 
             for await (const item of observable) list.push(item);
 
@@ -73,7 +73,7 @@ describe('Observable', () => {
                 onNext = jest.fn();
 
             await new Promise<void>(resolve =>
-                observable.subscribe(onNext, null, resolve)
+                observable.subscribe(onNext, undefined, resolve)
             );
 
             expect(onNext).toHaveBeenNthCalledWith(1, 1);
@@ -91,7 +91,7 @@ describe('Observable', () => {
             const old = new Observable<number>(subscriber);
 
             const observable = Observable.from<number>(old),
-                list = [];
+                list: number[] = [];
 
             for await (const item of observable) list.push(item);
 
@@ -104,8 +104,8 @@ describe('Observable', () => {
             const target = new EventEmitter();
             var count = 0;
 
-            const observable = Observable.fromEvent(target, 'test'),
-                list = [];
+            const observable = Observable.fromEvent<number>(target, 'test'),
+                list: number[] = [];
 
             const timer = setInterval(() => {
                 if (++count < 4) target.emit('test', count);
@@ -127,7 +127,7 @@ describe('Observable', () => {
     describe('Async Queue', () => {
         it('should process Data serially', async () => {
             const { process, destroy, observable } = createQueue(),
-                list = [];
+                list: number[] = [];
             var count = 0;
 
             setTimeout(function tick() {
