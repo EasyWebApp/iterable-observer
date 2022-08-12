@@ -2,11 +2,11 @@ import { Defer, makeDefer, EventTrigger } from './utility';
 
 declare global {
     interface SymbolConstructor {
-        observable: symbol;
+        readonly observable: unique symbol;
     }
 }
 
-if (!Symbol.observable) Symbol.observable = Symbol('observable');
+if (!Symbol.observable) Reflect.set(Symbol, 'observable', Symbol('observable'));
 
 export interface Observer<T = any> {
     next(value: T): void;

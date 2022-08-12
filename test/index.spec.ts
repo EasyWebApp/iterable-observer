@@ -72,7 +72,7 @@ describe('Observable', () => {
             const observable = new Observable<number>(subscriber),
                 onNext = jest.fn();
 
-            await new Promise(resolve =>
+            await new Promise<void>(resolve =>
                 observable.subscribe(onNext, null, resolve)
             );
 

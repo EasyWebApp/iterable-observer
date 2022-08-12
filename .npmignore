@@ -1,6 +1,7 @@
 .editorconfig
+.husky/
 .vscode/
 test/
-.cache/
+.parcel-cache/
 docs/
-.travis.yml
+.github/

@@ -9,5 +9,12 @@
         "outDir": "dist/",
         "lib": ["es2019"]
     },
-    "include": ["source/**/*"]
+    "include": ["source/**/*"],
+    "typedocOptions": {
+        "name": "Iterable Observer",
+        "excludeExternals": true,
+        "excludePrivate": true,
+        "readme": "./ReadMe.md",
+        "out": "docs/"
+    }
 }
