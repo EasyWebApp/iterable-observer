@@ -1,5 +1,5 @@
-import { Observer, Observable } from './Observable';
-import { makeDefer, Defer } from './utility';
+import { Observable, Observer } from './Observable';
+import { Defer } from './utility';
 
 export function createQueue<D = any>() {
     type Data = { defer: Defer; data: D };
@@ -12,7 +12,7 @@ export function createQueue<D = any>() {
 
     return {
         process<R = any>(data: D) {
-            const defer = makeDefer<R>();
+            const defer = new Defer<R>();
 
             if (!feedNext)
                 throw Error("Can't process data before Queue consuming");

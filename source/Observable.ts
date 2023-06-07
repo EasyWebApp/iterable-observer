@@ -44,7 +44,7 @@ export class Observable<T = any> implements Subscribable {
     }
 
     async *[Symbol.asyncIterator]() {
-        var queue: Defer<T>[] = [makeDefer<T>()],
+        var queue: Defer<T>[] = [new Defer<T>()],
             canceler: (() => void) | void,
             done = false;
 
@@ -54,7 +54,7 @@ export class Observable<T = any> implements Subscribable {
 
                 queue[queue.length - 1].resolve(value);
 
-                queue.push(makeDefer());
+                queue.push(new Defer<T>());
             },
             error(reason) {
                 if (!done)

@@ -1,18 +1,17 @@
-export interface Defer<T = any> {
-    promise: Promise<T>;
+export class Defer<T = any> {
     resolve: (data?: T) => void;
     reject: (error: Error | string) => void;
+
+    promise = new Promise<T>((resolve, reject) => {
+        this.resolve = resolve;
+        this.reject = reject;
+    });
 }
 
-export function makeDefer<T>(): Defer<T> {
-    var resolve: Defer<T>['resolve'], reject: Defer<T>['reject'];
-
-    const promise = new Promise<T>(
-        (done, error) => ((resolve = done), (reject = error))
-    );
-
-    return { resolve, reject, promise };
-}
+/**
+ * @deprecated use `new Defer()` directly, since v1.0.0.
+ */
+export const makeDefer = <T>() => new Defer<T>();
 
 export type EventHandler = (data: any) => void;
 
