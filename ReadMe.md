@@ -2,6 +2,7 @@
 
 [Observable Proposal][1] implement based on [Async Generator (ES 2018)][2] & [TypeScript][3]
 
+[![NPM Dependency](https://img.shields.io/librariesio/github/EasyWebApp/iterable-observer.svg)][4]
 [![CI & CD](https://github.com/EasyWebApp/iterable-observer/actions/workflows/main.yml/badge.svg)][5]
 [![](https://data.jsdelivr.com/v1/package/npm/iterable-observer/badge?style=rounded)][6]
 
@@ -77,6 +78,7 @@ app.use(BodyParser)
 [1]: https://github.com/tc39/proposal-observable
 [2]: https://tc39.es/ecma262/#sec-asyncgeneratorfunction-objects
 [3]: https://www.typescriptlang.org/
+[4]: https://libraries.io/npm/iterable-observer
 [5]: https://github.com/EasyWebApp/iterable-observer/actions/workflows/main.yml
 [6]: https://www.jsdelivr.com/package/npm/iterable-observer
 [7]: https://nodei.co/npm/iterable-observer/
