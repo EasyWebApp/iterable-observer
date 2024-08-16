@@ -3,6 +3,7 @@
         "module": "es6",
         "moduleResolution": "node",
         "esModuleInterop": true,
+        "downlevelIteration": true,
         "target": "es5",
         "declaration": true,
         "sourceMap": true,

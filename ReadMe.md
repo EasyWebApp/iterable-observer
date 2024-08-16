@@ -23,7 +23,6 @@ const observable = new Observable(({ next, complete }) => {
         () => (++count < 5 ? next(count) : complete(count)),
         0
     );
-
     return () => clearInterval(timer);
 });
 
@@ -36,20 +35,37 @@ const observable = new Observable(({ next, complete }) => {
 
 ### Enhance Run-time platforms
 
+#### Transform events
+
 ```javascript
 import { Observable } from 'iterable-observer';
 
 const reader = new FileReader(),
-    {
-        files: [file]
-    } = document.querySelector('input[type="file"]');
+    { files } = document.querySelector('input[type="file"]');
 
-reader.readAsBlob(file);
+reader.readAsBlob(files[0]);
 
 (async () => {
     for await (const { loaded } of Observable.fromEvent(reader, 'progress'))
         console.log((loaded / file.size) * 100 + '%');
 })();
+```
+
+#### Transform streams
+
+```typescript
+import { Observable } from 'iterable-observer';
+
+(async () => {
+    const { body } = await fetch('https://example.com/path/to/blob'),
+        chunks: Uint8Array[] = [];
+
+    for await (const chunk of Observable.fromStream(body)) chunks.push(chunk);
+
+    const blob = new Blob(chunks);
+
+    console.log(blob);
+}();
 ```
 
 ### Concurrent Task to Serial Queue
@@ -63,11 +79,8 @@ const { process, observable } = createQueue(),
     app = new Koa();
 
 (async () => {
-    for await (const {
-        defer: { resolve },
-        data
-    } of observable)
-        resolve(JSON.stringify(data));
+    for await (const { defer, data } of observable)
+        defer.resolve(JSON.stringify(data));
 })();
 
 app.use(BodyParser)
