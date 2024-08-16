@@ -33,11 +33,7 @@ export type SubscriberFunction<T = any> = (
 ) => (() => void) | void;
 
 export class Observable<T = any> implements Subscribable {
-    private subscriber: SubscriberFunction<T>;
-
-    constructor(subscriber: SubscriberFunction<T>) {
-        this.subscriber = subscriber;
-    }
+    constructor(private subscriber: SubscriberFunction<T>) {}
 
     [Symbol.observable]() {
         return this;
@@ -78,12 +74,27 @@ export class Observable<T = any> implements Subscribable {
         } while (queue[0]);
     }
 
-    static of<T = any>(...items: T[]) {
-        return new this<T>(({ next, complete }) => {
-            for (const item of items) next(item);
+    static fromStream<T>(list: Iterable<T> | AsyncIterable<T>) {
+        return new this<T>(({ next, complete, error }) => {
+            var stopped = false;
 
-            complete();
+            (async () => {
+                try {
+                    for await (const item of list)
+                        if (!stopped) next(item);
+                        else break;
+
+                    if (!stopped) complete();
+                } catch (bug) {
+                    if (!stopped) error(bug);
+                }
+            })();
+            return () => (stopped = true);
         });
+    }
+
+    static of<T = any>(...items: T[]) {
+        return this.fromStream(items);
     }
 
     async toPromise() {
@@ -118,16 +129,21 @@ export class Observable<T = any> implements Subscribable {
         })();
 
         return {
-            unsubscribe() {
-                stop = true;
-            },
+            unsubscribe: () => (stop = true),
             get closed() {
                 return stop;
             }
         };
     }
 
-    static from<T = any>(observable: Subscribable<T>) {
+    static from<T = any>(
+        observable: Iterable<T> | AsyncIterable<T> | Subscribable<T>
+    ) {
+        if (Symbol.iterator in observable) return this.of(...observable);
+
+        if (Symbol.asyncIterator in observable)
+            return this.fromStream(observable);
+
         return new this<T>(
             ({ next, error, complete }) =>
                 observable.subscribe(next, error, complete).unsubscribe

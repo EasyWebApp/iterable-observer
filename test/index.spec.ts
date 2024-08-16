@@ -24,7 +24,7 @@ describe('Observable', () => {
         it('should not call Subscriber Function while constructing', () => {
             observable = new Observable<number>(subscriber);
 
-            expect(subscriber).toBeCalledTimes(0);
+            expect(subscriber).toHaveBeenCalledTimes(0);
         });
 
         it('should iterate Limited items asynchronously', async () => {
@@ -32,21 +32,19 @@ describe('Observable', () => {
 
             for await (const item of observable) list.push(item);
 
-            expect(list).toEqual(expect.arrayContaining([1, 2, 3, 4, 5]));
+            expect(list).toEqual([1, 2, 3, 4, 5]);
 
-            expect(cleaner).toBeCalledTimes(1);
+            expect(cleaner).toHaveBeenCalledTimes(1);
         });
 
         it('should throw Error after error() called', () => {
             const observable = new Observable(({ error }) => {
                 error(new Error('test'));
             });
-
-            expect(
-                (async () => {
-                    for await (const item of observable);
-                })()
-            ).rejects.toStrictEqual(new Error('test'));
+            const failed = (async () => {
+                for await (const item of observable);
+            })();
+            expect(failed).rejects.toStrictEqual(new Error('test'));
         });
     });
 
@@ -57,7 +55,7 @@ describe('Observable', () => {
 
             for await (const item of observable) list.push(item);
 
-            expect(list).toEqual(expect.arrayContaining([1, 2, 3]));
+            expect(list).toEqual([1, 2, 3]);
         });
 
         it('should convert to a Promise', () => {
@@ -82,7 +80,7 @@ describe('Observable', () => {
             expect(onNext).toHaveBeenNthCalledWith(4, 4);
             expect(onNext).toHaveBeenNthCalledWith(5, 5);
 
-            expect(cleaner).toBeCalledTimes(1);
+            expect(cleaner).toHaveBeenCalledTimes(1);
         });
 
         it('should construct an Observable from an exist Observable', async () => {
@@ -95,7 +93,29 @@ describe('Observable', () => {
 
             for await (const item of observable) list.push(item);
 
-            expect(list).toEqual(expect.arrayContaining([1, 2, 3, 4, 5]));
+            expect(list).toEqual([1, 2, 3, 4, 5]);
+        });
+
+        it('should construct an Observable from an Iterable', async () => {
+            const observable = Observable.from([1, 2, 3, 4, 5].values()),
+                list: number[] = [];
+
+            for await (const item of observable) list.push(item);
+
+            expect(list).toEqual([1, 2, 3, 4, 5]);
+        });
+
+        it('should construct an Observable from an Async Iterable', async () => {
+            const observable = Observable.from(
+                    (async function* () {
+                        yield* [1, 2, 3, 4, 5];
+                    })()
+                ),
+                list: number[] = [];
+
+            for await (const item of observable) list.push(item);
+
+            expect(list).toEqual([1, 2, 3, 4, 5]);
         });
     });
 
@@ -118,7 +138,7 @@ describe('Observable', () => {
             try {
                 for await (const item of observable) list.push(item);
             } catch (error) {
-                expect(list).toEqual(expect.arrayContaining([1, 2, 3]));
+                expect(list).toEqual([1, 2, 3]);
                 expect(error).toBe('example');
             }
         });
@@ -139,15 +159,12 @@ describe('Observable', () => {
 
             for await (const item of observable)
                 if (item) {
-                    let {
-                        defer: { resolve },
-                        data
-                    } = item;
+                    let { defer, data } = item;
 
-                    resolve(++data);
+                    defer.resolve(++data);
                 }
 
-            expect(list).toEqual(expect.arrayContaining([1, 2, 3, 4, 5]));
+            expect(list).toEqual([1, 2, 3, 4, 5]);
         });
     });
 });
