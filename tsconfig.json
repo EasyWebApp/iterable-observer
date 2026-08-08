@@ -1,21 +1,25 @@
 {
     "compilerOptions": {
         "module": "es6",
-        "moduleResolution": "node",
+        "moduleResolution": "bundler",
         "esModuleInterop": true,
-        "downlevelIteration": true,
-        "target": "es5",
         "declaration": true,
         "sourceMap": true,
+        "rootDir": ".",
         "outDir": "dist/",
-        "lib": ["es2019"]
+        "lib": ["es2019"],
+        "types": ["node", "jest"]
     },
-    "include": ["source/**/*"],
+    "include": ["source/**/*", "test/**/*"],
     "typedocOptions": {
         "name": "Iterable Observer",
+        "includeVersion": true,
         "excludeExternals": true,
         "excludePrivate": true,
+        "plugin": ["typedoc-plugin-mdn-links"],
         "readme": "./ReadMe.md",
-        "plugin": ["typedoc-plugin-mdn-links"]
+        "navigationLinks": {
+            "GitHub": "https://github.com/idea2app/iterable-observer"
+        }
     }
 }

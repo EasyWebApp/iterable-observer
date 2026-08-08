@@ -94,4 +94,4 @@ app.use(BodyParser)
 [4]: https://libraries.io/npm/iterable-observer
 [5]: https://github.com/EasyWebApp/iterable-observer/actions/workflows/main.yml
 [6]: https://www.jsdelivr.com/package/npm/iterable-observer
-[7]: https://nodei.co/npm/iterable-observer/
+[7]: https://npm.im/iterable-observer/

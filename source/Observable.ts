@@ -1,4 +1,4 @@
-import { Defer, makeDefer, EventTrigger } from './utility';
+import { Defer, EventTrigger } from './utility';
 
 declare global {
     interface SymbolConstructor {
@@ -53,14 +53,17 @@ export class Observable<T = any> implements Subscribable {
                 queue.push(new Defer<T>());
             },
             error(reason) {
-                if (!done)
-                    queue[queue.length - 1].reject(reason), (done = true);
-
+                if (!done) {
+                    queue[queue.length - 1].reject(reason);
+                    done = true;
+                }
                 if (canceler) canceler();
             },
             complete() {
-                if (!done) queue[queue.length - 1].resolve(), (done = true);
-
+                if (!done) {
+                    queue[queue.length - 1].resolve();
+                    done = true;
+                }
                 if (canceler) canceler();
             }
         };
@@ -86,7 +89,12 @@ export class Observable<T = any> implements Subscribable {
 
                     if (!stopped) complete();
                 } catch (bug) {
-                    if (!stopped) error(bug);
+                    if (!stopped)
+                        error(
+                            bug instanceof Error || typeof bug === 'string'
+                                ? bug
+                                : new Error(bug + '')
+                        );
                 }
             })();
             return () => (stopped = true);
@@ -124,7 +132,12 @@ export class Observable<T = any> implements Subscribable {
 
                 if (onComplete instanceof Function) onComplete();
             } catch (error) {
-                if (onError instanceof Function) onError(error);
+                if (onError instanceof Function)
+                    onError(
+                        error instanceof Error || typeof error === 'string'
+                            ? error
+                            : new Error(error + '')
+                    );
             }
         })();
 
@@ -153,18 +166,18 @@ export class Observable<T = any> implements Subscribable {
     static fromEvent<T = any>(target: EventTrigger, name: string) {
         return new this<T>(({ next, error }) => {
             if (typeof target.on === 'function')
-                target.on(name, next).on('error', error);
+                target.on(name, next).on!('error', error);
             else {
-                target.addEventListener(name, next);
-                target.addEventListener('error', error);
+                target.addEventListener!(name, next);
+                target.addEventListener!('error', error);
             }
 
             return () => {
                 if (typeof target.off === 'function')
-                    target.off(name, next).off('error', error);
+                    target.off(name, next).off!('error', error);
                 else {
-                    target.removeEventListener(name, next);
-                    target.removeEventListener('error', error);
+                    target.removeEventListener!(name, next);
+                    target.removeEventListener!('error', error);
                 }
             };
         });

@@ -1,9 +1,9 @@
 export class Defer<T = any> {
-    resolve: (data?: T) => void;
-    reject: (error: Error | string) => void;
+    resolve!: (data?: T) => void;
+    reject!: (error: Error | string) => void;
 
     promise = new Promise<T>((resolve, reject) => {
-        this.resolve = resolve;
+        this.resolve = resolve as this['resolve'];
         this.reject = reject;
     });
 }
